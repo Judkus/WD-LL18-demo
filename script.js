@@ -4,6 +4,8 @@ const recipeDisplay = document.getElementById("recipe-display");
 const remixBtn = document.getElementById("remix-btn");
 const remixThemeSelect = document.getElementById("remix-theme");
 const remixOutput = document.getElementById("remix-output");
+const savedRecipesContainer = document.getElementById("saved-recipes-container");
+const savedRecipesList = document.getElementById("saved-recipes-list");
 
 // Global variable to store the current recipe data
 let currentRecipeData = null;
@@ -24,9 +26,9 @@ function getIngredientsHtml(recipe) {
 
 // This function displays the recipe on the page
 function renderRecipe(recipe) {
-  // Store the current recipe data globally so we can use it for remixing
+  // Store the current recipe data globally so we can use it for saving
   currentRecipeData = recipe;
-  
+
   recipeDisplay.innerHTML = `
     <div class="recipe-title-row">
       <h2>${recipe.strMeal}</h2>
@@ -36,7 +38,12 @@ function renderRecipe(recipe) {
     <ul>${getIngredientsHtml(recipe)}</ul>
     <h3>Instructions:</h3>
     <p>${recipe.strInstructions.replace(/\r?\n/g, "<br>")}</p>
+    <button id="save-recipe-btn" class="accent-btn">Save Recipe</button>
   `;
+
+  // Add event listener to the Save Recipe button
+  const saveRecipeBtn = document.getElementById("save-recipe-btn");
+  saveRecipeBtn.addEventListener("click", saveRecipe);
 }
 
 // This function gets a random recipe from the API and shows it
@@ -138,6 +145,71 @@ function getIngredientsText(recipe) {
   return ingredients.join(', ');
 }
 
+// Function to save the current recipe name to local storage
+function saveRecipe() {
+  if (!currentRecipeData) {
+    alert("No recipe to save!");
+    return;
+  }
+
+  const recipeName = currentRecipeData.strMeal;
+  let savedRecipes = JSON.parse(localStorage.getItem("savedRecipes")) || [];
+
+  if (!savedRecipes.includes(recipeName)) {
+    savedRecipes.push(recipeName);
+    localStorage.setItem("savedRecipes", JSON.stringify(savedRecipes));
+    displaySavedRecipes();
+  } else {
+    alert("Recipe is already saved!");
+  }
+}
+
+// Function to delete a recipe from local storage
+function deleteRecipe(recipeName) {
+  let savedRecipes = JSON.parse(localStorage.getItem("savedRecipes")) || [];
+  savedRecipes = savedRecipes.filter(recipe => recipe !== recipeName);
+  localStorage.setItem("savedRecipes", JSON.stringify(savedRecipes));
+  displaySavedRecipes();
+}
+
+// Function to fetch and display a recipe by name
+async function fetchRecipeByName(recipeName) {
+  recipeDisplay.innerHTML = "<p>Loading recipe...</p>"; // Show loading message
+  try {
+    // Fetch recipe details from MealDB API
+    const res = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(recipeName)}`);
+    const data = await res.json();
+
+    if (data.meals && data.meals.length > 0) {
+      const recipe = data.meals[0];
+      renderRecipe(recipe);
+    } else {
+      recipeDisplay.innerHTML = "<p>Sorry, no recipe found for this name.</p>";
+    }
+  } catch (error) {
+    recipeDisplay.innerHTML = "<p>Oops! Something went wrong while loading the recipe. Please try again!</p>";
+  }
+}
+
+// Function to display saved recipes with clickable names
+function displaySavedRecipes() {
+  const savedRecipes = JSON.parse(localStorage.getItem("savedRecipes")) || [];
+
+  if (savedRecipes.length > 0) {
+    savedRecipesContainer.style.display = "block";
+    savedRecipesList.innerHTML = savedRecipes
+      .map(recipe => `
+        <li>
+          <span class="clickable-recipe" onclick="fetchRecipeByName('${recipe}')">${recipe}</span>
+          <button class="delete-btn" onclick="deleteRecipe('${recipe}')">Delete</button>
+        </li>
+      `)
+      .join("");
+  } else {
+    savedRecipesContainer.style.display = "none";
+  }
+}
+
 
 // --- Event listeners ---
 
@@ -148,4 +220,7 @@ randomBtn.addEventListener("click", fetchAndDisplayRandomRecipe);
 remixBtn.addEventListener("click", remixRecipe);
 
 // When the page loads, show a random recipe right away
-document.addEventListener("DOMContentLoaded", fetchAndDisplayRandomRecipe);
+document.addEventListener("DOMContentLoaded", () => {
+  fetchAndDisplayRandomRecipe();
+  displaySavedRecipes();
+});
