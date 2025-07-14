@@ -234,77 +234,63 @@ p {
   }
 }
 
-#saved-recipes-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(70,100,220,0.06);
-  overflow: hidden;
+/* Saved Recipes List Styling */
+#saved-recipes-container {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
 }
 
-.saved-recipe-item {
+#saved-recipes-list li {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  padding: 10px 16px;
-  border-bottom: 1px solid #f0f2fa;
-  transition: background 0.15s;
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
 }
-.saved-recipe-item:last-child {
+
+#saved-recipes-list li:last-child {
   border-bottom: none;
 }
-.saved-recipe-item span {
-  text-align: left;
-  flex: 1 1 auto;
-  font-size: 18px;
-  color: #4568dc;
+
+.clickable-recipe {
   cursor: pointer;
-  transition: color 0.15s;
-  padding: 4px 0;
-}
-.saved-recipe-item span:hover,
-.saved-recipe-item span:focus {
-  color: #5a6fff;
+  color: #007BFF;
   text-decoration: underline;
 }
 
+.clickable-recipe:hover {
+  color: #0056b3;
+  text-decoration: none;
+}
+
 .delete-btn {
-  background: #f5f7fa;
+  background-color: #ff4d4d;
+  color: white;
   border: none;
-  color: #b00;
-  padding: 6px 14px;
-  border-radius: 6px;
+  border-radius: 4px;
+  padding: 5px 10px;
   cursor: pointer;
-  font-size: 15px;
-  transition: background 0.15s, color 0.15s;
-  margin-left: 12px;
-  text-align: right;
-}
-.delete-btn:hover {
-  background: #b00;
-  color: #fff;
 }
 
-.save-inline-btn {
-  padding: 8px 18px;
-  font-size: 16px;
-  height: 40px;
-  margin-bottom: 0;
-  flex-shrink: 0;
-  margin-top: 18px;
-}
 .delete-btn:hover {
-  background: #b00;
-  color: #fff;
+  background-color: #cc0000;
 }
 
-.save-inline-btn {
-  padding: 8px 18px;
-  font-size: 16px;
-  height: 40px;
-  margin-bottom: 0;
-  flex-shrink: 0;
+/* Responsive Design */
+@media (max-width: 768px) {
+  #saved-recipes-container {
+    padding: 5px;
+  }
+
+  #saved-recipes-list li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .delete-btn {
+    margin-top: 5px;
+  }
 }

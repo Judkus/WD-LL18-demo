@@ -191,19 +191,36 @@ async function fetchRecipeByName(recipeName) {
   }
 }
 
-// Function to display saved recipes with clickable names
+// Function to determine recipe category color
+function getCategoryColor(category) {
+  const categoryColors = {
+    "Dessert": "#FFD700",
+    "Vegan": "#32CD32",
+    "Breakfast": "#FF4500",
+    "Pizza": "#FF6347",
+    "Gas Station": "#8A2BE2",
+    "Dorm Room": "#4682B4"
+  };
+  return categoryColors[category] || "#ccc";
+}
+
+// Updated displaySavedRecipes function to include category color
 function displaySavedRecipes() {
   const savedRecipes = JSON.parse(localStorage.getItem("savedRecipes")) || [];
 
   if (savedRecipes.length > 0) {
     savedRecipesContainer.style.display = "block";
     savedRecipesList.innerHTML = savedRecipes
-      .map(recipe => `
-        <li>
-          <span class="clickable-recipe" onclick="fetchRecipeByName('${recipe}')">${recipe}</span>
-          <button class="delete-btn" onclick="deleteRecipe('${recipe}')">Delete</button>
-        </li>
-      `)
+      .map(recipe => {
+        const category = "Dessert"; // Example category, replace with actual logic
+        const color = getCategoryColor(category);
+        return `
+          <li style="border-left: 5px solid ${color};">
+            <span class="clickable-recipe" onclick="fetchRecipeByName('${recipe}')">${recipe}</span>
+            <button class="delete-btn" onclick="deleteRecipe('${recipe}')">Delete</button>
+          </li>
+        `;
+      })
       .join("");
   } else {
     savedRecipesContainer.style.display = "none";
